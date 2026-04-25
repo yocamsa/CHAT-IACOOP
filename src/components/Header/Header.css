@@ -27,6 +27,15 @@
   font-size: 2rem;
 }
 
+.company-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  object-fit: contain;
+  background-color: white;
+  padding: 2px;
+}
+
 .logo-text {
   font-family: var(--font-heading);
   font-size: var(--text-2xl);
@@ -127,9 +136,25 @@
   color: var(--color-text-primary);
 }
 
-.user-label {
-  font-size: var(--text-xs);
-  color: var(--color-text-secondary);
+.user-role-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  display: inline-block;
+  margin-top: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.user-role-badge.admin {
+  background-color: rgba(170, 59, 255, 0.15);
+  color: #aa3bff;
+}
+
+.user-role-badge.usuario {
+  background-color: rgba(76, 175, 80, 0.15);
+  color: var(--color-success);
 }
 
 .dropdown-menu {
@@ -229,3 +254,39 @@
     justify-content: center;
   }
 }
+
+/* Botón de cerrar sesión */
+.logout-btn {
+  margin-left: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  background-color: transparent;
+  color: var(--color-error);
+  border: 1px solid var(--color-error);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: var(--text-sm);
+  transition: all var(--transition-fast);
+}
+
+.logout-btn:hover {
+  background-color: rgba(244, 67, 54, 0.1);
+}
+
+.admin-panel-btn {
+  background-color: transparent;
+  color: var(--color-primary);
+  border: 1px solid rgba(30, 58, 95, 0.2);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 500;
+  font-size: var(--text-sm);
+  transition: all var(--transition-fast);
+  margin-left: auto;
+}
+
+.admin-panel-btn:hover {
+  background-color: rgba(30, 58, 95, 0.05);
+  border-color: var(--color-primary);
+}
