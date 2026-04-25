@@ -1,10 +1,50 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { mockUsers } from '../data/mockData';
+import { supabase } from '../services/supabase';
 
 const AppContext = createContext();
 
 // Proveedor de contexto principal
 export const AppProvider = ({ children }) => {
+  const [session, setSession] = useState(undefined);
+  const [userRole, setUserRole] = useState(null);
+  const [userAvatar, setUserAvatar] = useState(null);
+  const [currentView, setCurrentView] = useState('app');
+
+  useEffect(() => {
+    const fetchRoleAndAvatar = async (userId) => {
+      if (!userId) return;
+      const { data } = await supabase
+        .from('profiles')
+        .select('role, avatar_url')
+        .eq('id', userId)
+        .single();
+      
+      if (data) {
+        setUserRole(data.role);
+        setUserAvatar(data.avatar_url);
+      }
+    };
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session?.user) fetchRoleAndAvatar(session.user.id);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if (session?.user) fetchRoleAndAvatar(session.user.id);
+      else {
+        setUserRole(null);
+        setUserAvatar(null);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   // Usuario actual (por defecto el primero)
   const [currentUser, setCurrentUser] = useState(mockUsers[0]);
   
@@ -63,7 +103,13 @@ export const AppProvider = ({ children }) => {
     isConnected,
     setIsConnected,
     isApiConfigured,
-    clearChat
+    clearChat,
+    session,
+    userRole,
+    userAvatar,
+    currentView,
+    setCurrentView,
+    signOut: () => supabase.auth.signOut()
   };
 
   return (

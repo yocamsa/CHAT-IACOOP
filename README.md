@@ -72,3 +72,24 @@ npm run dev
 - Sin API key configurada, el sistema usa respuestas predefinidas (fallback)
 - Los datos son mock y se reinician al cambiar de usuario
 - El chat se limpia automáticamente al cambiar de usuario
+
+## 🔒 Sistema de Roles y Autenticación (Novedad)
+
+Recientemente el prototipo migró hacia un modelo de **gestión de usuarios centralizada (RBAC)** impulsada por Supabase Auth:
+
+### 1. Panel de Administración
+Los usuarios con el rol de `admin` tienen acceso a un panel de control exclusivo (`AdminDashboard`) donde pueden:
+- Ver una lista de todos los usuarios registrados.
+- Crear nuevos usuarios asigando contraseñas seguras y definiendo roles (`usuario` o `admin`).
+- Adjuntar un **Logo Corporativo** (imagen local que se comprime a Base64) al perfil del usuario.
+- Eliminar o cambiar roles en tiempo real a otros usuarios.
+
+### 2. Integración con Supabase
+- **Autenticación Estricta**: La vista principal y el formulario de registro se bloquearon para evitar que usuarios no deseados se registren. Todas las cuentas deben ser creadas desde el Panel de Administración.
+- **Triggers en Base de Datos**: Cada vez que el administrador crea una cuenta, Supabase Auth lanza un *trigger* (`handle_new_user`) que automáticamente inserta a la persona en la tabla `profiles` con un rol por defecto.
+- **Fetch API Bypass**: Para eludir la restricción del SDK del navegador respecto a la `SERVICE_ROLE_KEY`, el panel de administrador utiliza solicitudes directas de Fetch (`authFetch`) enviando las credenciales administrativas de manera opaca. 
+
+### 3. Personalización Visual
+- En la cabecera (Header) de la aplicación, el "robot" genérico 🤖 se reemplazará automáticamente por la **imagen corporativa (Base64)** vinculada a cada usuario.
+- Los perfiles de demostración (mockData) ahora cuentan con **avatares hiperrealistas** (conectados a RandomUser) según el género y nombre de la persona.
+- Las vistas cambian dinámicamente: un administrador verá insignias exclusivas (👑 Administrador) y accesos directos al panel.

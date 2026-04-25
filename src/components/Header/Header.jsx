@@ -4,13 +4,17 @@ import { useApp } from '../../context/AppContext';
 import './Header.css';
 
 const Header = () => {
-  const { currentUser, changeUser, users, isApiConfigured } = useApp();
+  const { currentUser, changeUser, users, isApiConfigured, signOut, userRole, userAvatar, setCurrentView } = useApp();
 
   return (
     <header className="header">
       <div className="header-left">
         <div className="logo">
-          <span className="logo-icon">🤖</span>
+          {userAvatar ? (
+            <img src={userAvatar} alt="Logo Corporativa" className="company-logo" />
+          ) : (
+            <span className="logo-icon">🤖</span>
+          )}
           <span className="logo-text">IA-COOP</span>
         </div>
         <span className="logo-subtitle">Asistente Financiero Inteligente</span>
@@ -25,20 +29,25 @@ const Header = () => {
           </span>
         </div>
 
+        {/* Rol del usuario real */}
+        <div className={`user-role-badge ${userRole || 'usuario'}`} style={{ fontSize: '13px', padding: '6px 12px' }}>
+          {userRole === 'admin' ? 'Administrador' : 'Usuario Normal'}
+        </div>
+
         {/* Selector de usuario */}
         <div className="user-selector">
-          <div className="current-user">
-            <img 
-              src={currentUser.avatar} 
-              alt={currentUser.nombre} 
+          <div className="current-user" title="Perfil de Prueba para el Chat">
+            <img
+              src={currentUser.avatar}
+              alt={currentUser.nombre}
               className="user-avatar"
             />
             <div className="user-info">
               <span className="user-name">{currentUser.nombre}</span>
-              <span className="user-label">Usuario Demo</span>
+              <span className="user-label" style={{ fontSize: '11px', color: 'var(--color-text-secondary)' }}>Perfil de Prueba</span>
             </div>
           </div>
-          
+
           <div className="dropdown-menu">
             {users.map(user => (
               <button
@@ -55,6 +64,22 @@ const Header = () => {
             ))}
           </div>
         </div>
+
+        {userRole === 'admin' && (
+          <button
+            onClick={() => setCurrentView('admin')}
+            className="admin-panel-btn"
+          >
+            Panel de Admin
+          </button>
+        )}
+
+        <button
+          onClick={signOut}
+          className="logout-btn"
+        >
+          Cerrar Sesión
+        </button>
       </div>
     </header>
   );

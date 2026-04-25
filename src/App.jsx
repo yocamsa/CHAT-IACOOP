@@ -1,14 +1,30 @@
 import React, { useState } from 'react';
-import { AppProvider } from './context/AppContext';
+import { AppProvider, useApp } from './context/AppContext';
 import Header from './components/Header/Header';
 import Chat from './components/Chat/Chat';
 import Recommendations from './components/Recommendations/Recommendations';
+import Login from './components/Login/Login';
+import AdminDashboard from './components/Admin/AdminDashboard';
 import './styles/global.css';
 import './App.css';
 
 function AppContent() {
+  const { session, userRole, currentView } = useApp();
   // Estado para el tab activo en mobile
   const [activeTab, setActiveTab] = useState('chat');
+
+  if (session === undefined) {
+    return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--color-bg)', color: 'var(--color-primary)' }}>Cargando...</div>;
+  }
+
+  if (!session) {
+    return <Login />;
+  }
+
+  // Renderizar panel de admin solo si es administrador Y eligió ver el panel
+  if (userRole === 'admin' && currentView === 'admin') {
+    return <AdminDashboard />;
+  }
 
   return (
     <div className="app">
