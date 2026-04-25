@@ -2,13 +2,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--space-md) var(--space-lg);
+  padding: var(--space-sm) var(--space-lg);
   background: var(--color-surface);
   border-bottom: 1px solid rgba(30, 58, 95, 0.1);
   position: sticky;
   top: 0;
   z-index: 100;
   width: 100%;
+  min-height: 120px;
 }
 
 .header-left {
@@ -28,12 +29,18 @@
 }
 
 .company-logo {
-  width: 36px;
-  height: 36px;
-  border-radius: 6px;
+  width: 100px;
+  height: 100px;
+  border-radius: 12px;
   object-fit: contain;
   background-color: white;
-  padding: 2px;
+  padding: 4px;
+  box-shadow: var(--shadow-md);
+  transition: transform var(--transition-fast);
+}
+
+.company-logo:hover {
+  transform: scale(1.05);
 }
 
 .logo-text {
@@ -52,6 +59,9 @@
   color: var(--color-text-secondary);
   padding-left: var(--space-md);
   border-left: 2px solid var(--color-text-light);
+  height: 40px;
+  display: flex;
+  align-items: center;
 }
 
 .header-right {

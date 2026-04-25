@@ -29,9 +29,12 @@ const Login = () => {
   return (
     <div className="login-container">
       <div className="login-card">
-        <h2 className="login-title">Iniciar Sesión</h2>
+        <div className="login-branding">
+          <span className="logo-icon">🤖</span>
+          <h2 className="login-title">IA-COOP</h2>
+        </div>
         <p className="login-subtitle">
-          Sistema de Servicio al Asociado IA-COOP
+          Asistente Financiero Inteligente
         </p>
 
         {error && <div className="login-error">{error}</div>}

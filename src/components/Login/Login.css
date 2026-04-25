@@ -11,19 +11,36 @@
   background: var(--color-surface);
   border: 1px solid rgba(30, 58, 95, 0.1);
   border-radius: var(--radius-lg);
-  padding: 40px;
+  padding: 48px;
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
   box-shadow: var(--shadow-xl);
+}
+
+.login-branding {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.login-branding .logo-icon {
+  font-size: 4rem;
+  margin-bottom: var(--space-xs);
 }
 
 .login-title {
   text-align: center;
-  margin-top: 0;
-  margin-bottom: var(--space-sm);
+  margin: 0;
   color: var(--color-primary);
   font-family: var(--font-heading);
-  font-size: var(--text-2xl);
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .login-subtitle {
