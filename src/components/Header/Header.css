@@ -28,8 +28,15 @@
 }
 
 .company-logo {
-  width: 36px;
-  height: 36px;
+  width: 100px;
+  border-radius: 6px;
+  object-fit: contain;
+  background-color: white;
+  padding: 2px;
+}
+
+.cooplab-logo {
+  width: 50px;
   border-radius: 6px;
   object-fit: contain;
   background-color: white;
@@ -41,7 +48,11 @@
   font-size: var(--text-2xl);
   font-weight: 700;
   color: var(--color-primary);
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary) 0%,
+    var(--color-secondary) 100%
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -252,6 +263,18 @@
     justify-content: space-between;
   }
 
+  .user-selector {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .dropdown-menu {
+    left: 0;
+    right: auto;
+    min-width: min(280px, calc(100vw - 32px));
+    max-width: calc(100vw - 32px);
+  }
+
   .current-user {
     flex: 1;
     justify-content: center;
@@ -308,6 +331,7 @@
   }
 
   .dropdown-menu {
-    min-width: min(280px, 92vw);
+    min-width: min(280px, calc(100vw - 16px));
+    max-width: calc(100vw - 16px);
   }
 }
