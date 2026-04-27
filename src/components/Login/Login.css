@@ -117,3 +117,23 @@
 .toggle-btn:hover {
   text-decoration: underline;
 }
+
+@media (max-width: 768px) {
+  .login-container {
+    padding: var(--space-lg);
+  }
+
+  .login-card {
+    padding: 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-container {
+    padding: var(--space-md);
+  }
+
+  .login-card {
+    padding: 24px;
+  }
+}

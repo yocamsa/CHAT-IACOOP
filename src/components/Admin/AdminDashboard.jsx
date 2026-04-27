@@ -130,7 +130,7 @@ const AdminDashboard = () => {
               </div>
               <div className="form-group">
                 <label>Logo de la Corporativa (Opcional)</label>
-                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', minWidth: '0' }}>
                   <input 
                     type="file" 
                     accept="image/png, image/jpeg, image/jpg"

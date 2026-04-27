@@ -103,6 +103,21 @@
 
 /* Responsive */
 @media (max-width: 1024px) {
+  .app {
+    height: 100dvh;
+    min-height: auto;
+    overflow: hidden;
+  }
+
+  .main-content {
+    flex: 1;
+    min-height: 0;
+    padding: var(--space-md);
+    padding-bottom: calc(80px + var(--space-md));
+    display: flex;
+    flex-direction: column;
+  }
+
   .desktop-layout {
     display: none;
   }
@@ -113,20 +128,27 @@
   }
 
   .mobile-content {
-    display: block;
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    padding: 0;
+    flex: 1;
+    min-height: 0;
+    display: none;
+    flex-direction: column;
+    overflow-y: auto;
+    height: auto;
   }
 
   .mobile-content.active {
-    display: block;
+    display: flex;
   }
 
-  .mobile-content:not(.active) {
-    display: none;
-  }
-
-  .main-content {
-    padding: var(--space-md);
-    padding-bottom: calc(80px + var(--space-md));
+  .mobile-content > * {
+    flex: 1;
+    min-height: 0;
   }
 }
 
@@ -157,4 +179,43 @@
 
 .recommendations-panel {
   animation-delay: 200ms;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: var(--space-sm);
+    padding-bottom: calc(72px + var(--space-sm));
+  }
+
+  .mobile-tabs {
+    padding: var(--space-xs) var(--space-sm);
+    gap: var(--space-sm);
+  }
+
+  .tab-btn {
+    padding: var(--space-sm);
+  }
+
+  .tab-icon {
+    font-size: 1.25rem;
+  }
+
+  .tab-label {
+    font-size: var(--text-xs);
+  }
+}
+
+@media (max-width: 480px) {
+  .mobile-tabs {
+    padding: var(--space-xs);
+  }
+
+  .tab-btn {
+    padding: var(--space-xs) var(--space-sm);
+    gap: 2px;
+  }
+
+  .tab-icon {
+    font-size: 1.15rem;
+  }
 }

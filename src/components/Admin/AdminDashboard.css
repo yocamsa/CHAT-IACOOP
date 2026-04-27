@@ -21,6 +21,7 @@
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
+  box-sizing: border-box;
 }
 
 .admin-grid {
@@ -28,6 +29,7 @@
   grid-template-columns: 1fr 2fr;
   gap: var(--space-xl);
   align-items: start;
+  min-width: 0;
 }
 
 @media (max-width: 1024px) {
@@ -42,6 +44,9 @@
   padding: var(--space-xl);
   box-shadow: var(--shadow-md);
   border: 1px solid rgba(30, 58, 95, 0.05);
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .admin-card-title {
@@ -72,6 +77,13 @@
 
 .admin-form select:focus {
   border-color: var(--color-primary);
+}
+
+.admin-form input[type="file"] {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .admin-btn-primary {
@@ -194,3 +206,48 @@
   background-color: rgba(30, 58, 95, 0.05);
 }
 
+
+@media (max-width: 768px) {
+  .admin-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-md);
+    padding: var(--space-md);
+  }
+
+  .admin-main {
+    padding: var(--space-md);
+  }
+
+  .admin-card {
+    padding: var(--space-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-main {
+    padding: var(--space-sm);
+  }
+
+  .admin-card {
+    padding: var(--space-md);
+  }
+
+  .users-table th,
+  .users-table td {
+    padding: var(--space-sm);
+  }
+}
+
+@media (max-width: 768px) {
+  .users-table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    display: block;
+  }
+  
+  .users-table {
+    min-width: 600px;
+  }
+}

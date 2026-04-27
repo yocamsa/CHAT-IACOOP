@@ -1,10 +1,11 @@
 // Componente Header con selector de usuario
-import React from 'react';
+import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import './Header.css';
 
 const Header = () => {
   const { currentUser, changeUser, users, isApiConfigured, signOut, userRole, userAvatar, setCurrentView } = useApp();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   return (
     <header className="header">
@@ -35,7 +36,10 @@ const Header = () => {
         </div>
 
         {/* Selector de usuario */}
-        <div className="user-selector">
+        <div 
+          className={`user-selector ${isDropdownOpen ? 'open' : ''}`}
+          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+        >
           <div className="current-user" title="Perfil de Prueba para el Chat">
             <img
               src={currentUser.avatar}
@@ -53,7 +57,11 @@ const Header = () => {
               <button
                 key={user.id}
                 className={`dropdown-item ${user.id === currentUser.id ? 'active' : ''}`}
-                onClick={() => changeUser(user.id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  changeUser(user.id);
+                  setIsDropdownOpen(false);
+                }}
               >
                 <img src={user.avatar} alt={user.nombre} className="dropdown-avatar" />
                 <div className="dropdown-info">

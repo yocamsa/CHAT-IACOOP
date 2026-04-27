@@ -276,3 +276,33 @@
   margin: var(--space-xs) 0;
   color: var(--color-text-secondary);
 }
+@media (max-width: 480px) {
+  .chat-header {
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  .chat-messages {
+    padding: var(--space-sm);
+    gap: var(--space-sm);
+  }
+
+  .message {
+    max-width: 100%;
+  }
+
+  .chat-input-container {
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  .send-btn {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .chat-container {
+    height: 100%;
+    min-height: 0;
+  }
+}

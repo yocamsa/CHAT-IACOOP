@@ -172,10 +172,13 @@
   transition: all var(--transition-fast);
   min-width: 280px;
   z-index: 200;
+  max-height: 60vh;
+  overflow-y: auto;
 }
 
 .user-selector:hover .dropdown-menu,
-.user-selector:focus-within .dropdown-menu {
+.user-selector:focus-within .dropdown-menu,
+.user-selector.open .dropdown-menu {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
@@ -289,4 +292,22 @@
 .admin-panel-btn:hover {
   background-color: rgba(30, 58, 95, 0.05);
   border-color: var(--color-primary);
-}
+}
+@media (max-width: 480px) {
+  .header {
+    padding: var(--space-sm);
+  }
+
+  .logo-text {
+    font-size: var(--text-xl);
+  }
+
+  .header-right {
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+
+  .dropdown-menu {
+    min-width: min(280px, 92vw);
+  }
+}
