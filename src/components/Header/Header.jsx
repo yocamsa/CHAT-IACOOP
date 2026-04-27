@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useApp } from "../../context/AppContext";
 import "./Header.css";
 import iacooplogo from "../../assets/IA-COOP-LAB.jpeg";
+import logoEBS from "../../assets/LogoEBS.jpeg";
 
 const Header = () => {
   const {
@@ -28,7 +29,11 @@ const Header = () => {
               className="company-logo"
             />
           ) : (
-            <span className="logo-icon">🤖</span>
+            <img
+              src={logoEBS}
+              alt="Logo Corporativa"
+              className="company-logo"
+            />
           )}
           <img src={iacooplogo} alt="Logo IA-COOP" className="cooplab-logo" />
         </div>
