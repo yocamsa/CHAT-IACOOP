@@ -18,7 +18,7 @@
 .admin-main {
   flex: 1;
   padding: var(--space-xl);
-  max-width: 1200px;
+  max-width: 1320px;
   margin: 0 auto;
   width: 100%;
   box-sizing: border-box;
@@ -26,7 +26,7 @@
 
 .admin-grid {
   display: grid;
-  grid-template-columns: 1fr 2fr;
+  grid-template-columns: minmax(320px, 1fr) minmax(0, 2.8fr);
   gap: var(--space-xl);
   align-items: start;
   min-width: 0;
@@ -124,12 +124,15 @@
 
 .users-table-container {
   overflow-x: auto;
+  padding-bottom: var(--space-xs);
 }
 
 .users-table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
+  table-layout: fixed;
+  min-width: 760px;
 }
 
 .users-table th {
@@ -148,6 +151,34 @@
 .user-email {
   font-weight: 500;
   color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.users-table th:nth-child(1),
+.users-table td:nth-child(1) {
+  width: 34%;
+}
+
+.users-table th:nth-child(2),
+.users-table td:nth-child(2) {
+  width: 14%;
+}
+
+.users-table th:nth-child(3),
+.users-table td:nth-child(3) {
+  width: 18%;
+}
+
+.users-table th:nth-child(4),
+.users-table td:nth-child(4) {
+  width: 20%;
+}
+
+.users-table th:nth-child(5),
+.users-table td:nth-child(5) {
+  width: 18%;
 }
 
 .role-badge {
@@ -250,4 +281,41 @@
   .users-table {
     min-width: 600px;
   }
+}
+.limit-input {
+  width: 90px;
+  padding: var(--space-xs) var(--space-sm);
+  border: 1px solid rgba(30, 58, 95, 0.2);
+  border-radius: var(--radius-sm);
+  background-color: #fff;
+  color: var(--color-text-primary);
+  font-size: var(--text-sm);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.limit-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(30, 58, 95, 0.15);
+  outline: none;
+}
+
+.messages-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.actions-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  min-width: 180px;
+}
+
+.actions-cell .admin-btn-primary {
+  margin-top: 0;
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--text-xs);
 }

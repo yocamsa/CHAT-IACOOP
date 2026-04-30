@@ -35,6 +35,15 @@
   margin: 0;
 }
 
+.chat-limit {
+  color: white;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.15);
+}
+
 .clear-chat-btn {
   padding: var(--space-sm);
   border-radius: var(--radius-sm);

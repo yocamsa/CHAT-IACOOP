@@ -42,11 +42,12 @@ export const getAllUsers = async () => {
 
     // 3. Combinar usuarios y perfiles
     return users.map(user => {
-      const profile = profiles.find(p => p.id === user.id) || { role: 'usuario' };
+      const profile = profiles.find(p => p.id === user.id) || { role: 'usuario', messages_left: 0 };
       return {
         id: user.id,
         email: user.email,
         role: profile.role,
+        messages_left: profile.messages_left,
         createdAt: user.created_at
       };
     });
@@ -103,6 +104,22 @@ export const updateUserRole = async (userId, newRole) => {
     return true;
   } catch (error) {
     console.error('Error updating role:', error);
+    throw error;
+  }
+};
+
+// Función para actualizar el límite de mensajes
+export const updateUserLimit = async (userId, newLimit) => {
+  try {
+    const { error } = await supabase
+      .from('profiles')
+      .update({ messages_left: newLimit })
+      .eq('id', userId);
+
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    console.error('Error updating messages_left:', error);
     throw error;
   }
 };

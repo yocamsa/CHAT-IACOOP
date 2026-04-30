@@ -1,13 +1,26 @@
 // Componente de Chat con IA
 import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
+import { supabase } from '../../services/supabase';
 import { sendMessageToDeepSeek, isApiConfigured, getFallbackResponse } from '../../services/deepseekService';
-import { quickActions, welcomeMessages } from '../../data/mockData';
+import { quickActions } from '../../data/mockData';
+import LimitModal from './LimitModal';
 import './Chat.css';
 
 const Chat = () => {
-  const { currentUser, messages, addMessage, setMessages, isLoading, setIsLoading } = useApp();
+  const {
+    currentUser,
+    messages,
+    addMessage,
+    setMessages,
+    isLoading,
+    setIsLoading,
+    userRole,
+    messagesLeft,
+    setMessagesLeft
+  } = useApp();
   const [inputValue, setInputValue] = useState('');
+  const [isLimitModalOpen, setIsLimitModalOpen] = useState(false);
   const isMounted = useRef(false);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
@@ -78,6 +91,11 @@ const Chat = () => {
     const messageText = text || inputValue.trim();
     if (!messageText) return;
 
+    if (userRole === 'usuario' && messagesLeft === 0) {
+      setIsLimitModalOpen(true);
+      return;
+    }
+
     // Agregar mensaje del usuario
     addMessage({ role: 'user', content: messageText });
     setInputValue('');
@@ -96,6 +114,16 @@ const Chat = () => {
       }
 
       addMessage({ role: 'assistant', content: response });
+
+      if (userRole === 'usuario') {
+        const { data, error: decrementError } = await supabase.rpc('decrement_message_count');
+        if (decrementError) {
+          console.error('Error decrementing messages:', decrementError);
+        } else if (typeof data === 'number') {
+          setMessagesLeft(data);
+          if (data === 0) setIsLimitModalOpen(true);
+        }
+      }
     } catch (error) {
       console.error('Error:', error);
       addMessage({
@@ -127,6 +155,9 @@ const Chat = () => {
         <div className="chat-title">
           <span className="chat-icon">💬</span>
           <h2>Chat con IA-COOP</h2>
+        </div>
+        <div className="chat-limit">
+          {userRole === 'admin' ? 'Unlimited' : `Mensajes: ${messagesLeft ?? '—'}`}
         </div>
         {messages.length > 0 && (
           <button 
@@ -203,17 +234,18 @@ const Chat = () => {
             onKeyPress={handleKeyPress}
             placeholder="Escribe tu consulta..."
             className="chat-input"
-            disabled={isLoading}
+            disabled={isLoading || (userRole === 'usuario' && messagesLeft === 0)}
           />
           <button
             className="send-btn"
             onClick={() => handleSendMessage()}
-            disabled={!inputValue.trim() || isLoading}
+            disabled={!inputValue.trim() || isLoading || (userRole === 'usuario' && messagesLeft === 0)}
           >
             ➤
           </button>
         </div>
       </div>
+      <LimitModal isOpen={isLimitModalOpen} onClose={() => setIsLimitModalOpen(false)} />
     </div>
   );
 };

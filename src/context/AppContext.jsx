@@ -9,6 +9,7 @@ export const AppProvider = ({ children }) => {
   const [session, setSession] = useState(undefined);
   const [userRole, setUserRole] = useState(null);
   const [userAvatar, setUserAvatar] = useState(null);
+  const [messagesLeft, setMessagesLeft] = useState(null);
   const [currentView, setCurrentView] = useState('app');
 
   useEffect(() => {
@@ -16,13 +17,14 @@ export const AppProvider = ({ children }) => {
       if (!userId) return;
       const { data } = await supabase
         .from('profiles')
-        .select('role, avatar_url')
+        .select('role, avatar_url, messages_left')
         .eq('id', userId)
         .single();
       
       if (data) {
         setUserRole(data.role);
         setUserAvatar(data.avatar_url);
+        setMessagesLeft(data.messages_left);
       }
     };
 
@@ -39,6 +41,7 @@ export const AppProvider = ({ children }) => {
       else {
         setUserRole(null);
         setUserAvatar(null);
+        setMessagesLeft(null);
       }
     });
 
@@ -107,6 +110,8 @@ export const AppProvider = ({ children }) => {
     session,
     userRole,
     userAvatar,
+    messagesLeft,
+    setMessagesLeft,
     currentView,
     setCurrentView,
     signOut: () => supabase.auth.signOut()

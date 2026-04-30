@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { getAllUsers, createUser, updateUserRole, deleteUser } from '../../services/adminService';
+import React, { useState, useEffect, useCallback } from 'react';
+import { getAllUsers, createUser, updateUserRole, updateUserLimit, deleteUser } from '../../services/adminService';
 import { useApp } from '../../context/AppContext';
 import './AdminDashboard.css';
 
@@ -16,8 +16,9 @@ const AdminDashboard = () => {
   const [role, setRole] = useState('usuario');
   const [avatarUrl, setAvatarUrl] = useState('');
   const [isCreating, setIsCreating] = useState(false);
+  const [limitUpdates, setLimitUpdates] = useState({});
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
       const data = await getAllUsers();
@@ -32,11 +33,11 @@ const AdminDashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [fetchUsers]);
 
   const handleCreateUser = async (e) => {
     e.preventDefault();
@@ -78,6 +79,30 @@ const AdminDashboard = () => {
       fetchUsers();
     } catch (err) {
       setError('Error actualizando rol: ' + err.message);
+    }
+  };
+
+  const handleLimitChange = (userId, value) => {
+    setLimitUpdates((prev) => ({
+      ...prev,
+      [userId]: value
+    }));
+  };
+
+  const handleLimitSave = async (userId) => {
+    const rawValue = limitUpdates[userId];
+    const parsed = Number(rawValue);
+    if (Number.isNaN(parsed) || parsed < 0) {
+      setError('El límite debe ser un número válido mayor o igual a 0.');
+      return;
+    }
+
+    try {
+      await updateUserLimit(userId, parsed);
+      setSuccess('Límite actualizado exitosamente.');
+      fetchUsers();
+    } catch (err) {
+      setError('Error actualizando límite: ' + err.message);
     }
   };
 
@@ -211,6 +236,7 @@ const AdminDashboard = () => {
                       <th>Correo</th>
                       <th>Rol</th>
                       <th>Fecha de Creación</th>
+                      <th>Mensajes</th>
                       <th>Acciones</th>
                     </tr>
                   </thead>
@@ -230,12 +256,31 @@ const AdminDashboard = () => {
                         </td>
                         <td>{new Date(user.createdAt).toLocaleDateString()}</td>
                         <td>
-                          <button 
-                            className="admin-btn-danger"
-                            onClick={() => handleDeleteUser(user.id, user.email)}
-                          >
-                            Eliminar
-                          </button>
+                          <div className="messages-cell">
+                            <input
+                              type="number"
+                              min="0"
+                              value={limitUpdates[user.id] ?? user.messages_left ?? 0}
+                              onChange={(e) => handleLimitChange(user.id, e.target.value)}
+                              className="limit-input"
+                            />
+                          </div>
+                        </td>
+                        <td>
+                          <div className="actions-cell">
+                            <button
+                              className="admin-btn-primary"
+                              onClick={() => handleLimitSave(user.id)}
+                            >
+                              Guardar
+                            </button>
+                            <button
+                              className="admin-btn-danger"
+                              onClick={() => handleDeleteUser(user.id, user.email)}
+                            >
+                              Eliminar
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}

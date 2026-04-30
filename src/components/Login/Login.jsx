@@ -7,6 +7,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [isRegistering, setIsRegistering] = useState(false);
 
   const handleAuth = async (e) => {
     e.preventDefault();
@@ -14,10 +15,15 @@ const Login = () => {
     setError(null);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const { error } = isRegistering
+        ? await supabase.auth.signUp({
+            email,
+            password,
+          })
+        : await supabase.auth.signInWithPassword({
+            email,
+            password,
+          });
       if (error) throw error;
     } catch (error) {
       setError(error.message);
@@ -29,7 +35,7 @@ const Login = () => {
   return (
     <div className="login-container">
       <div className="login-card">
-        <h2 className="login-title">Iniciar Sesión</h2>
+        <h2 className="login-title">{isRegistering ? 'Crear Cuenta' : 'Iniciar Sesión'}</h2>
         <p className="login-subtitle">
           Sistema de Servicio al Asociado IA-COOP
         </p>
@@ -66,9 +72,24 @@ const Login = () => {
             className="login-btn"
             disabled={loading}
           >
-            {loading ? 'Cargando...' : 'Ingresar'}
+            {loading ? 'Cargando...' : isRegistering ? 'Registrarme' : 'Ingresar'}
           </button>
         </form>
+
+        <div className="login-toggle">
+          <button
+            type="button"
+            className="toggle-btn"
+            onClick={() => {
+              setIsRegistering((prev) => !prev);
+              setError(null);
+            }}
+          >
+            {isRegistering
+              ? '¿Ya tienes cuenta? Inicia sesión'
+              : '¿No tienes cuenta? Regístrate'}
+          </button>
+        </div>
       </div>
     </div>
   );
