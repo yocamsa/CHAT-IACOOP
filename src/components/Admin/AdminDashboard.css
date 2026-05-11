@@ -168,6 +168,7 @@
 .admin-form input[type="email"],
 .admin-form input[type="password"],
 .admin-form input[type="tel"],
+.admin-form input[type="number"],
 .admin-form select {
   padding: 10px 12px;
   border: 1.5px solid #e2e8f0;
@@ -189,6 +190,17 @@
 
 .admin-form input::placeholder {
   color: var(--color-text-light);
+}
+
+/* ── Number input (hide spinners) ──────────── */
+.admin-form input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.admin-form input[type="number"]::-webkit-inner-spin-button,
+.admin-form input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .admin-form select {
@@ -266,19 +278,58 @@
   color: var(--color-primary);
 }
 
-/* ── Avatar Upload ────────────────────────── */
+/* ── File Upload (Logo) ────────────────────── */
 
-.admin-avatar-upload {
+.file-upload-wrapper {
   display: flex;
-  gap: var(--space-sm);
   align-items: center;
+  gap: var(--space-sm);
   flex-wrap: wrap;
 }
 
-.admin-avatar-upload input[type="file"] {
-  flex: 1;
-  min-width: 140px;
+.file-upload-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.file-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: transparent;
+  color: var(--color-primary);
+  border: 1.5px solid var(--color-primary);
+  border-radius: var(--radius-sm);
   font-size: var(--text-xs);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+.file-upload-btn:hover {
+  background: rgba(30, 58, 95, 0.06);
+}
+
+.file-upload-btn svg {
+  flex-shrink: 0;
+}
+
+.file-upload-name {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
 }
 
 .admin-avatar-preview {
@@ -286,7 +337,8 @@
   height: 36px;
   border-radius: 4px;
   object-fit: contain;
-  border: 1px solid var(--color-primary);
+  border: 1.5px solid var(--color-primary);
+  background: var(--color-bg);
 }
 
 .admin-field-hint {

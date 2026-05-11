@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { getAllUsers, createUser, updateUserRole, updateUserLimit, deleteUser, updateUserProfile } from '../../services/adminService';
+import { getAllUsers, createUser, updateUserRole, deleteUser, updateUserProfile } from '../../services/adminService';
 import { useApp } from '../../context/AppContext';
 import './AdminDashboard.css';
 
@@ -36,8 +36,8 @@ const AdminDashboard = () => {
   const [want_contact, setWant_contact] = useState(true);
   const [role, setRole] = useState('usuario');
   const [avatarUrl, setAvatarUrl] = useState('');
+  const [avatarFileName, setAvatarFileName] = useState('');
   const [isCreating, setIsCreating] = useState(false);
-  const [limitUpdates, setLimitUpdates] = useState({});
 
   // Edit modal state
   const [editingUser, setEditingUser] = useState(null);
@@ -53,6 +53,7 @@ const AdminDashboard = () => {
   const [editRole, setEditRole] = useState('usuario');
   const [editMessagesLeft, setEditMessagesLeft] = useState(0);
   const [editAvatarUrl, setEditAvatarUrl] = useState('');
+  const [editAvatarFileName, setEditAvatarFileName] = useState('');
   const [isEditing, setIsEditing] = useState(false);
 
   const fetchUsers = useCallback(async () => {
@@ -105,6 +106,7 @@ const AdminDashboard = () => {
       setWant_contact(true);
       setRole('usuario');
       setAvatarUrl('');
+      setAvatarFileName('');
       fetchUsers();
     } catch (err) {
       setError(err.message);
@@ -131,26 +133,6 @@ const AdminDashboard = () => {
       fetchUsers();
     } catch (err) {
       setError('Error actualizando rol: ' + err.message);
-    }
-  };
-
-  const handleLimitChange = (userId, value) => {
-    setLimitUpdates((prev) => ({ ...prev, [userId]: value }));
-  };
-
-  const handleLimitSave = async (userId) => {
-    const rawValue = limitUpdates[userId];
-    const parsed = Number(rawValue);
-    if (Number.isNaN(parsed) || parsed < 0) {
-      setError('El límite debe ser un número válido mayor o igual a 0.');
-      return;
-    }
-    try {
-      await updateUserLimit(userId, parsed);
-      setSuccess('Límite actualizado exitosamente.');
-      fetchUsers();
-    } catch (err) {
-      setError('Error actualizando límite: ' + err.message);
     }
   };
 
@@ -187,6 +169,7 @@ const AdminDashboard = () => {
     setEditRole(user.role || 'usuario');
     setEditMessagesLeft(user.messages_left ?? 0);
     setEditAvatarUrl(user.avatar_url || '');
+    setEditAvatarFileName('');
     setEditingUser(user);
   };
 
@@ -405,13 +388,15 @@ const AdminDashboard = () => {
                 </div>
                 <div className="form-group">
                   <label>Logo de la Corporativa (Opcional)</label>
-                  <div className="admin-avatar-upload">
+                  <div className="file-upload-wrapper">
                     <input
                       type="file"
+                      id="create-logo-upload"
                       accept="image/png, image/jpeg, image/jpg"
                       onChange={(e) => {
                         const file = e.target.files[0];
                         if (!file) return;
+                        setAvatarFileName(file.name);
                         const reader = new FileReader();
                         reader.onload = (event) => {
                           const img = new Image();
@@ -441,7 +426,19 @@ const AdminDashboard = () => {
                         };
                         reader.readAsDataURL(file);
                       }}
+                      className="file-upload-input"
                     />
+                    <label htmlFor="create-logo-upload" className="file-upload-btn">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                      </svg>
+                      Elegir archivo
+                    </label>
+                    <span className="file-upload-name">
+                      {avatarFileName || 'Ningún archivo seleccionado'}
+                    </span>
                     {avatarUrl && (
                       <img
                         src={avatarUrl}
@@ -478,7 +475,6 @@ const AdminDashboard = () => {
                         <th>Entidad</th>
                         <th>Rol</th>
                         <th>Contacto</th>
-                        <th>Mensajes</th>
                         <th>Fecha</th>
                         <th>Acciones</th>
                       </tr>
@@ -519,17 +515,6 @@ const AdminDashboard = () => {
                               <span className="contact-badge no-contact">No</span>
                             )}
                           </td>
-                          <td>
-                            <div className="messages-cell">
-                              <input
-                                type="number"
-                                min="0"
-                                value={limitUpdates[user.id] ?? user.messages_left ?? 0}
-                                onChange={(e) => handleLimitChange(user.id, e.target.value)}
-                                className="limit-input"
-                              />
-                            </div>
-                          </td>
                           <td className="user-date">{new Date(user.createdAt).toLocaleDateString()}</td>
                           <td>
                             <div className="actions-cell">
@@ -539,12 +524,6 @@ const AdminDashboard = () => {
                                 title="Editar perfil"
                               >
                                 Editar
-                              </button>
-                              <button
-                                className="admin-btn-primary btn-sm"
-                                onClick={() => handleLimitSave(user.id)}
-                              >
-                                Guardar
                               </button>
                               <button
                                 className="admin-btn-danger"
@@ -592,28 +571,12 @@ const AdminDashboard = () => {
                           <span>📅 {new Date(user.createdAt).toLocaleDateString()}</span>
                         </div>
                         <div className="user-card-actions">
-                          <div className="messages-cell">
-                            <label>Mensajes:</label>
-                            <input
-                              type="number"
-                              min="0"
-                              value={limitUpdates[user.id] ?? user.messages_left ?? 0}
-                              onChange={(e) => handleLimitChange(user.id, e.target.value)}
-                              className="limit-input"
-                            />
-                          </div>
                           <div className="user-card-buttons">
                             <button
                               className="admin-btn-edit btn-sm"
                               onClick={() => openEditModal(user)}
                             >
                               Editar
-                            </button>
-                            <button
-                              className="admin-btn-primary btn-sm"
-                              onClick={() => handleLimitSave(user.id)}
-                            >
-                              Guardar
                             </button>
                             <button
                               className="admin-btn-danger"
@@ -766,13 +729,15 @@ const AdminDashboard = () => {
                 {/* Logo */}
                 <div className="form-group">
                   <label>Logo de la Corporativa</label>
-                  <div className="admin-avatar-upload">
+                  <div className="file-upload-wrapper">
                     <input
                       type="file"
+                      id="edit-logo-upload"
                       accept="image/png, image/jpeg, image/jpg"
                       onChange={(e) => {
                         const file = e.target.files[0];
                         if (!file) return;
+                        setEditAvatarFileName(file.name);
                         const reader = new FileReader();
                         reader.onload = (event) => {
                           const img = new Image();
@@ -802,7 +767,19 @@ const AdminDashboard = () => {
                         };
                         reader.readAsDataURL(file);
                       }}
+                      className="file-upload-input"
                     />
+                    <label htmlFor="edit-logo-upload" className="file-upload-btn">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                      </svg>
+                      Elegir archivo
+                    </label>
+                    <span className="file-upload-name">
+                      {editAvatarFileName || 'Ningún archivo seleccionado'}
+                    </span>
                     {editAvatarUrl && (
                       <img
                         src={editAvatarUrl}
