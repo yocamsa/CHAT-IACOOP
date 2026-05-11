@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { mockUsers } from '../data/mockData';
 import { supabase } from '../services/supabase';
 
@@ -10,43 +10,67 @@ export const AppProvider = ({ children }) => {
   const [userRole, setUserRole] = useState(null);
   const [userAvatar, setUserAvatar] = useState(null);
   const [messagesLeft, setMessagesLeft] = useState(null);
+  const [userProfile, setUserProfile] = useState({
+    first_name: '',
+    last_name: '',
+    entity: '',
+    position: '',
+    whatsapp: '',
+    want_contact: false,
+  });
   const [currentView, setCurrentView] = useState('app');
 
-  useEffect(() => {
-    const fetchRoleAndAvatar = async (userId) => {
-      if (!userId) return;
-      const { data } = await supabase
-        .from('profiles')
-        .select('role, avatar_url, messages_left')
-        .eq('id', userId)
-        .single();
-      
-      if (data) {
-        setUserRole(data.role);
-        setUserAvatar(data.avatar_url);
-        setMessagesLeft(data.messages_left);
-      }
-    };
+  const fetchUserProfile = useCallback(async (userId) => {
+    if (!userId) return;
+    const { data } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
+    
+    if (data) {
+      setUserRole(data.role);
+      setUserAvatar(data.avatar_url);
+      setMessagesLeft(data.messages_left);
+      setUserProfile({
+        first_name: data.first_name || '',
+        last_name: data.last_name || '',
+        entity: data.entity || '',
+        position: data.position || '',
+        whatsapp: data.whatsapp || '',
+        want_contact: data.want_contact || false,
+      });
+    }
+  }, []);
 
+  useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
-      if (session?.user) fetchRoleAndAvatar(session.user.id);
+      if (session?.user) fetchUserProfile(session.user.id);
     });
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
-      if (session?.user) fetchRoleAndAvatar(session.user.id);
+      if (session?.user) fetchUserProfile(session.user.id);
       else {
         setUserRole(null);
         setUserAvatar(null);
         setMessagesLeft(null);
+        setUserProfile({
+          first_name: '',
+          last_name: '',
+          entity: '',
+          position: '',
+          whatsapp: '',
+          want_contact: false,
+        });
       }
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [fetchUserProfile]);
 
   // Usuario actual (por defecto el primero)
   const [currentUser, setCurrentUser] = useState(mockUsers[0]);
@@ -112,6 +136,10 @@ export const AppProvider = ({ children }) => {
     userAvatar,
     messagesLeft,
     setMessagesLeft,
+    userProfile,
+    refreshProfile: () => {
+      if (session?.user) fetchUserProfile(session.user.id);
+    },
     currentView,
     setCurrentView,
     signOut: () => supabase.auth.signOut()
