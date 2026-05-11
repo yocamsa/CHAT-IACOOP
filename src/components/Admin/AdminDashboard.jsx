@@ -50,6 +50,9 @@ const AdminDashboard = () => {
     whatsappNumber: '',
     want_contact: false,
   });
+  const [editRole, setEditRole] = useState('usuario');
+  const [editMessagesLeft, setEditMessagesLeft] = useState(0);
+  const [editAvatarUrl, setEditAvatarUrl] = useState('');
   const [isEditing, setIsEditing] = useState(false);
 
   const fetchUsers = useCallback(async () => {
@@ -181,6 +184,9 @@ const AdminDashboard = () => {
       whatsappNumber: number,
       want_contact: user.want_contact || false,
     });
+    setEditRole(user.role || 'usuario');
+    setEditMessagesLeft(user.messages_left ?? 0);
+    setEditAvatarUrl(user.avatar_url || '');
     setEditingUser(user);
   };
 
@@ -209,6 +215,9 @@ const AdminDashboard = () => {
         position: editForm.position,
         whatsapp: fullWhatsapp,
         want_contact: editForm.want_contact,
+        role: editRole,
+        messages_left: editMessagesLeft,
+        ...(editAvatarUrl ? { avatar_url: editAvatarUrl } : {}),
       });
       setSuccess(`Perfil de ${editingUser.email} actualizado exitosamente.`);
       setEditingUser(null);
@@ -745,6 +754,87 @@ const AdminDashboard = () => {
                       Interesado en conocer más de <strong>IA-COOP-LAB</strong>
                     </span>
                   </label>
+                </div>
+              </div>
+
+              {/* Configuración */}
+              <div className="admin-form-section">
+                <div className="admin-form-section-header">
+                  <span>⚙️</span> Configuración
+                </div>
+
+                {/* Logo */}
+                <div className="form-group">
+                  <label>Logo de la Corporativa</label>
+                  <div className="admin-avatar-upload">
+                    <input
+                      type="file"
+                      accept="image/png, image/jpeg, image/jpg"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (!file) return;
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                          const img = new Image();
+                          img.onload = () => {
+                            const canvas = document.createElement('canvas');
+                            const MAX_SIZE = 150;
+                            let width = img.width;
+                            let height = img.height;
+                            if (width > height) {
+                              if (width > MAX_SIZE) {
+                                height *= MAX_SIZE / width;
+                                width = MAX_SIZE;
+                              }
+                            } else {
+                              if (height > MAX_SIZE) {
+                                width *= MAX_SIZE / height;
+                                height = MAX_SIZE;
+                              }
+                            }
+                            canvas.width = width;
+                            canvas.height = height;
+                            const ctx = canvas.getContext('2d');
+                            ctx.drawImage(img, 0, 0, width, height);
+                            setEditAvatarUrl(canvas.toDataURL('image/png'));
+                          };
+                          img.src = event.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                      }}
+                    />
+                    {editAvatarUrl && (
+                      <img
+                        src={editAvatarUrl}
+                        alt="Vista previa"
+                        className="admin-avatar-preview"
+                      />
+                    )}
+                  </div>
+                  <small className="admin-field-hint">PNG o JPG. Se adaptará automáticamente (150px máx).</small>
+                </div>
+
+                {/* Rol + Mensajes */}
+                <div className="admin-form-row" style={{ marginTop: 'var(--space-md)' }}>
+                  <div className="form-group">
+                    <label>Rol</label>
+                    <select value={editRole} onChange={(e) => setEditRole(e.target.value)}>
+                      <option value="usuario">Usuario Normal</option>
+                      <option value="admin">Administrador</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>Mensajes Disponibles</label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={editMessagesLeft}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value, 10);
+                        setEditMessagesLeft(isNaN(val) ? 0 : val);
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
 
