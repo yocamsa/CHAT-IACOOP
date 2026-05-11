@@ -34,14 +34,24 @@
   margin-bottom: var(--space-2xl);
 }
 
-.login-logo {
+.login-logos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
   margin-bottom: var(--space-lg);
+  flex-wrap: wrap;
 }
 
-.login-logo-icon {
-  font-size: 3rem;
-  display: block;
-  animation: bounce 2s infinite;
+.login-logo-img {
+  height: 60px;
+  width: auto;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.login-logo-img:first-child {
+  height: 52px;
 }
 
 .login-title {
@@ -401,8 +411,16 @@
     font-size: var(--text-xl);
   }
 
-  .login-logo-icon {
-    font-size: 2.5rem;
+  .login-logos {
+    gap: 14px;
+  }
+
+  .login-logo-img {
+    height: 44px;
+  }
+
+  .login-logo-img:first-child {
+    height: 38px;
   }
 }
 

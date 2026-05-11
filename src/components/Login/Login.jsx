@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { supabase } from '../../services/supabase';
 import { updateProfileFields } from '../../services/adminService';
+import CygnusLogo from '../../assets/CygnusLogo.png';
+import IACooplabLogo from '../../assets/IA-COOP-LAB.jpeg';
 import './Login.css';
 
 // Códigos de país para WhatsApp
@@ -353,8 +355,9 @@ const Login = () => {
     <div className="login-container">
       <div className={`login-card ${isRegistering ? 'register-card' : ''}`}>
         <div className="login-card-header">
-          <div className="login-logo">
-            <span className="login-logo-icon">🤝</span>
+          <div className="login-logos">
+            <img src={CygnusLogo} alt="Cygnus Logo" className="login-logo-img" />
+            <img src={IACooplabLogo} alt="IA-COOP-LAB Logo" className="login-logo-img" />
           </div>
           <h2 className="login-title">
             {isRegistering ? 'Crear Cuenta' : 'Iniciar Sesión'}
