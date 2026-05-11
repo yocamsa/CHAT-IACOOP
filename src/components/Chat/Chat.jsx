@@ -234,12 +234,12 @@ const Chat = () => {
             onKeyPress={handleKeyPress}
             placeholder="Escribe tu consulta..."
             className="chat-input"
-            disabled={isLoading || (userRole === 'usuario' && messagesLeft === 0)}
+            disabled={isLoading}
           />
           <button
             className="send-btn"
             onClick={() => handleSendMessage()}
-            disabled={!inputValue.trim() || isLoading || (userRole === 'usuario' && messagesLeft === 0)}
+            disabled={!inputValue.trim() || isLoading}
           >
             ➤
           </button>
