@@ -48,6 +48,13 @@ export const getAllUsers = async () => {
         email: user.email,
         role: profile.role,
         messages_left: profile.messages_left,
+        first_name: profile.first_name || '',
+        last_name: profile.last_name || '',
+        entity: profile.entity || '',
+        position: profile.position || '',
+        whatsapp: profile.whatsapp || '',
+        want_contact: profile.want_contact || false,
+        avatar_url: profile.avatar_url || null,
         createdAt: user.created_at
       };
     });
@@ -58,25 +65,34 @@ export const getAllUsers = async () => {
 };
 
 // Función para crear un nuevo usuario y su perfil
-export const createUser = async (email, password, role, avatarUrl) => {
+export const createUser = async (email, password, role, avatarUrl, extraFields = {}) => {
   try {
-    // 1. Crear el usuario en auth.users vía fetch
+    // 1. Crear el usuario en auth.users vía fetch con metadatos
     const newUser = await authFetch('/admin/users', {
       method: 'POST',
       body: JSON.stringify({
         email: email,
         password: password,
-        email_confirm: true
+        email_confirm: true,
+        user_metadata: {
+          first_name: extraFields.first_name || '',
+          last_name: extraFields.last_name || '',
+          entity: extraFields.entity || '',
+          position: extraFields.position || '',
+          whatsapp: extraFields.whatsapp || '',
+          want_contact: extraFields.want_contact || false
+        }
       })
     });
 
-    // 2. El trigger (handle_new_user) ya habrá creado el perfil como 'usuario'.
+    // 2. El trigger (handle_new_user) ya habrá creado el perfil con los metadatos.
     // Actualizamos el rol o avatar si es necesario.
-    if (role === 'admin' || avatarUrl) {
-      const updates = {};
-      if (role === 'admin') updates.role = 'admin';
-      if (avatarUrl) updates.avatar_url = avatarUrl;
+    const updates = {};
+    if (role === 'admin') updates.role = 'admin';
+    if (avatarUrl) updates.avatar_url = avatarUrl;
 
+    // Si hay extraFields que no se pasaron en metadata, los actualizamos directo
+    if (Object.keys(updates).length > 0) {
       const { error: profileError } = await supabase
         .from('profiles')
         .update(updates)
@@ -120,6 +136,49 @@ export const updateUserLimit = async (userId, newLimit) => {
     return true;
   } catch (error) {
     console.error('Error updating messages_left:', error);
+    throw error;
+  }
+};
+
+// Función para actualizar cualquier campo del perfil de un usuario (admin)
+export const updateUserProfile = async (userId, profileData) => {
+  try {
+    const { error } = await supabase
+      .from('profiles')
+      .update(profileData)
+      .eq('id', userId);
+
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    console.error('Error updating user profile:', error);
+    throw error;
+  }
+};
+
+// Función para actualizar perfil con campos extra (usada en registro público)
+// Usa la clave de servicio para bypass de RLS
+export const updateProfileFields = async (userId, fields) => {
+  try {
+    const response = await fetch(`${supabaseUrl}/rest/v1/profiles?id=eq.${userId}`, {
+      method: 'PATCH',
+      headers: {
+        'apikey': supabaseServiceRoleKey,
+        'Authorization': `Bearer ${supabaseServiceRoleKey}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify(fields)
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || 'Error actualizando perfil');
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error updating profile fields:', error);
     throw error;
   }
 };
